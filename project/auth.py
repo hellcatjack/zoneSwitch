@@ -9,6 +9,7 @@ import os
 import re
 
 auth = Blueprint('auth', __name__)
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
 
 @auth.route('/login')
 def login():
@@ -46,29 +47,21 @@ def logout():
 @login_required
 def checkzone(zonename):
 
-    status = os.system('sh ~/changezone.sh '+zonename)
+    status = os.system('sh '+APP_ROOT+'/changezone.sh '+zonename)
 
     return jsonify({'result': status})
 
 @auth.route('/checkdns',methods=['GET'])
 @login_required
 def checkdns():
-   status = os.system('nslookup netflix.com - 127.0.0.1 > ~/dnsResult')
-   file_object = open('/root/dnsResult')
+   status = os.system('nslookup netflix.com - 127.0.0.1 > '+APP_ROOT+'/dnsResult')
+   file_object = open(APP_ROOT+'/dnsResult')
    try:
       file_context = file_object.read()
    finally:
       file_object.close()
 
    return jsonify({'result': file_context})
-
-@auth.route('/changeIp/<zonename>/<ipaddress>',methods=['GET'])
-@login_required
-def changeIp(zonename,ipaddress):
-    status=''
-    if checkip(ipaddress) and zonename.isalnum():
-       status = os.system('sed -i "s/^'+zonename+'=\\"\\(.*\\)/'+zonename+'=\\"'+ipaddress+'\\"/g" ~/changezone.sh')
-    return jsonify({'result': status})
 
 def checkip(ip):
     p = re.compile('^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$')

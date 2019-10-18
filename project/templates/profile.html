@@ -67,26 +67,28 @@ function changeIP(myId){
 </h1>
 <div style="float:left;width:49%">
 <div style="margin-bottom: 10px">
-        <button class="button button1 right" type="button" id="us">切换至美国</button>
+        <button class="button button1 right" type="button" id="us1">美国1</button>
+	<button class="button button1 right" type="button" id="us2">美国2</button>
+</div>
+<div style="margin-bottom: 10px">
+        <button class="button button1 right" type="button" id="hk1">香港1</button>
+        <button class="button button1 right" type="button" id="hk2">香港2</button>
+</div>
+<div style="margin-bottom: 10px">
+        <button class="button button2 right" type="button" id="tw">台湾</button>
 </div>
 <div style="margin-bottom: 10px">
-        <button class="button button2 right" type="button" id="tw">切换至台湾</button>
+        <button class="button button4 right" type="button" id="sg">新加坡</button>
 </div>
 <div style="margin-bottom: 10px">
-        <button class="button button3 right" type="button" id="hk">切换至香港</button>
+        <button class="button button5 right" type="button" id="jp">日本</button>
 </div>
 <div style="margin-bottom: 10px">
-        <button class="button button4 right" type="button" id="sg">切换至新加坡</button>
-</div>
-<div style="margin-bottom: 10px">
-        <button class="button button5 right" type="button" id="jp">切换至日本</button>
-</div>
-<div style="margin-bottom: 10px">
-        <button class="button button1 right" type="button" id="local">切换至正常</button>
+        <button class="button button1 right" type="button" id="local" style="width:120px">原生解析</button>
 </div>
 
 <div style="margin-bottom: 10px">
-        <button class="button button2" type="button" onclick="showDns()">查看DNS解析</button>
+        <button class="button button2" type="button" onclick="showDns()" style="width:120px">查看DNS解析</button>
 </div>
 </div>
 <div style="float:left;width:49%">
@@ -105,7 +107,6 @@ window.onload = function(){
 
       right.onmousedown = function(e){
           if(e.button ==2){
-              changeIP(right.id);
           }else if(e.button ==0){
               changeDns(right.id);
           }
