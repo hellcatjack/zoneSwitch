@@ -67,7 +67,11 @@ Install(){
         check_root
         [[ -e ${FILE} ]] && echo -e "${Error} 检测到 zoneSwitch 已安装 !" && exit 1
         echo -e "${Info} 开始安装..."
-	yum install git net-tools bind-utils dnsmasq python3-pip -y
+	if [[ ${release} == "centos" ]]; then
+        	yum install git net-tools bind-utils dnsmasq python3-pip -y
+        else
+        	apt-get install git net-tools bind-utils dnsmasq python3-pip -y
+        fi
 	pip3 install flask_sqlalchemy flask-login
 	git clone https://github.com/hellcatjack/zoneSwitch.git
 	iptables -I INPUT -p tcp --dport 5000 -j ACCEPT
@@ -153,7 +157,7 @@ else
 		createuser
 		;;
 		*)
-		echo "请输入正确数字 [0-10]"
+		echo "请输入正确数字 [0-3]"
 		;;
 	esac
 fi
