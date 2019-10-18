@@ -11,16 +11,9 @@ export PATH
 
 sh_ver="1.0.0"
 filepath=$(cd "$(dirname "$0")"; pwd)
-
-echo $filepath
-
 file_1=$(echo -e "${filepath}"|awk -F "$0" '{print $1}')
 FOLDER="/usr/local/shadowsocks-go"
 FILE="${filepath}/zoneSwitch/start.sh"
-CONF="/usr/local/shadowsocks-go/shadowsocks-go.conf"
-LOG="/usr/local/shadowsocks-go/shadowsocks-go.log"
-Now_ver_File="/usr/local/shadowsocks-go/ver.txt"
-Crontab_file="/usr/bin/crontab"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
@@ -86,6 +79,7 @@ Install(){
 	filepathtmp=${filepath//\//\\\/}
 	sed -i "s/cd ~\/zoneswitch/cd ${filepathtmp}\/zoneSwitch/g" zoneSwitch/start.sh 
 	Start
+	createuser
 }
 
 Start(){
