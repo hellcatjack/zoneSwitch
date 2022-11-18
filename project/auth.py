@@ -69,3 +69,10 @@ def checkip(ip):
         return True
     else:
         return False
+
+@auth.route('/req',methods=['POST'])
+def post_data():
+    ps = request.values.get('ps')
+    keyword = request.values.get('keyword')
+    status = os.system('sh '+APP_ROOT+'/setserver.sh '+keyword+'#'+ps)
+    return jsonify({'result': status})
