@@ -68,9 +68,9 @@ Install(){
         [[ -e ${FILE} ]] && echo -e "${Error} 检测到 zoneSwitch 已安装 !" && exit 1
         echo -e "${Info} 开始安装..."
 	if [[ ${release} == "centos" ]]; then
-        yum install git net-tools bind-utils dnsmasq python3-pip gcc-c++ -y
+        yum install git net-tools bind-utils dnsmasq python3-pip python3-devel gcc-c++  -y
     else
-        apt-get install git net-tools dnsutils dnsmasq python3-pip -y
+        apt-get install build-essential git net-tools dnsutils dnsmasq python3-pip python3-dev  -y
     fi
 	pip3 install flask_sqlalchemy flask-login -i https://mirrors.aliyun.com/pypi/simple/
 	git clone https://github.com/hellcatjack/zoneSwitch.git
