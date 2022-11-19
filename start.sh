@@ -1,4 +1,4 @@
-cd ~/zoneswitch
+cd ~/zoneSwitch
 pid=$(ps -ef| grep "flask run"| grep -v "grep" | grep -v "init.d" |grep -v "service" |awk '{print $2}')
 [[ ! -z ${pid} ]] && kill $pid
 export FLASK_APP=project
