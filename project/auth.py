@@ -7,6 +7,7 @@ from .models import User
 from . import db
 import os
 import re
+import hashlib
 
 auth = Blueprint('auth', __name__)
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
@@ -72,7 +73,14 @@ def checkip(ip):
 
 @auth.route('/req',methods=['POST'])
 def post_data():
+    md5key='myKEY'
     ps = request.values.get('ps')
     keyword = request.values.get('keyword')
+    md5 = request.values.get('md5')
+    hl = hashlib.md5()
+    hlstr=keyword+md5key+ps
+    hl.update(hlstr.encode(encoding='utf-8'))
+    if hl.hexdigest() != md5:
+        return jsonify({'result': 'md5 error!'})
     status = os.system('sh '+APP_ROOT+'/setserver.sh '+keyword+'#'+ps)
     return jsonify({'result': status})
