@@ -1,3 +1,5 @@
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
 cd ~/zoneSwitch
 pid=$(ps -ef| grep "flask run"| grep -v "grep" | grep -v "init.d" |grep -v "service" |awk '{print $2}')
 [[ ! -z ${pid} ]] && kill $pid
