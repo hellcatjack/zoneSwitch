@@ -1,9 +1,6 @@
 #!/bin/bash
-server=`hostname`
-name=YourServerName
-reqServer=yourReqestServer
-md5key=yourMD5KEY
-lastip=/root/lastip
+config=/root/config_report.sh
+source $config
 ip1=`curl -s ifconfig.me`
 ip2=`curl -s myip.ipip.net|grep -o "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}"`
 
@@ -33,14 +30,9 @@ else
 fi
 echo "Pass! [$ip]"
 
-lastsubmitip=`cat $lastip`
-if [ "$ip" == "$lastsubmitip" ]; then
-	echo "IP is not change. Exiting..."
-	exit 1
-fi
-
 count=1
-result=''
+lasturlsplit=(${lasturl//\;/ })
+newurl=""
 for line in `find /etc/shadowsocks-libev -name *.json`
 do
         method=`cat $line|grep method|awk -F '"' '{print $4}'`
@@ -48,16 +40,25 @@ do
         port=`cat $line|grep port|awk -F ':' '{print $2}' |awk -F ',' '{print $1}'`
         url=`echo "$method:$pwd@$ip:$port"|base64 -w 0`
         url=`echo "ss://$( base64 <<< $method:$pwd@$ip:$port )#$name"|base64 -w 0`
-        md5=`echo -n $server-${count}$md5key$url|md5sum|cut -d ' ' -f1`
-	result=`curl -s --data-urlencode "ps=$url" --data-urlencode "keyword=$server-$count" --data-urlencode "md5=$md5" $reqServer`
+	newurl="$newurl$url;"
+	
+	if [ "$url" == "${lasturlsplit[$[ count -1 ]]}" ]; then
+	        echo "URL$count has not changed."
+	else
+	        md5=`echo -n $server-${count}$md5key$url|md5sum|cut -d ' ' -f1`
+	        result=`curl -s --data-urlencode "ps=$url" --data-urlencode "keyword=$server-$count" --data-urlencode "md5=$md5" $reqServer`
+	fi
         count=$((${count} + 1))
 done
 
-if [ $result == '{"result":0}' ]; then
+if [ ! $result ]; then
+        echo "No updates are required."
+elif [ "$result" == '{"result":0}' ]; then
 	echo "Submit success."
-	echo -n $ip > $lastip
-	exit 0
+	sed -i "/^lasturl=/clasturl=\"$newurl\"" $config
 else
 	echo "Submit failure."
 	exit 1
 fi
+
+exit 0
