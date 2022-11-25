@@ -3,6 +3,8 @@ config=/root/config_report.sh
 source $config
 ip1=`curl -s ifconfig.me`
 ip2=`curl -s myip.ipip.net|grep -o "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}"`
+up=30
+down=200
 
 function isValidIp() {
         local ip=$1
@@ -51,11 +53,39 @@ do
         count=$((${count} + 1))
 done
 
+count=1
+lasthysteriasplit=(${lasthysteria//\;/ })
+newhyurl=""
+
+for line in `find /etc/hysteria -name *.json`
+do
+        protocol=`cat $line|grep protocol|awk -F '"' '{print $4}'`
+        obfs=`cat $line|grep obfs|awk -F '"' '{print $4}'`
+        alpn=`cat $line|grep alpn|awk -F '"' '{print $4}'`
+#        up=`cat $line|grep up_mbps|awk -F ':' '{print $2}'|awk -F ',' '{print $1}'|sed 's/^[ \t]*//g'`
+#        down=`cat $line|grep down_mbps|awk -F ':' '{print $2}'|awk -F ',' '{print $1}'|sed 's/^[ \t]*//g'`
+        pwd=`cat $line|grep config|awk -F '"' '{print $4}'`
+        port=`cat $line|grep listen|awk -F ':' '{print $3}' |awk -F '"' '{print $1}'`
+	port=$((${port} + 1))
+        url=`echo -e "- name: $name\n  server: $ip\n  port: $port\n  type: hysteria\n  protocol: $protocol\n  up: $up\n  down: $down\n  alpn:\n  - $alpn\n  auth_str: $pwd\n  obfs: $obfs"`
+        url=`echo "$url"|base64 -w 0`
+        newhyurl="$newhyurl$url;"
+
+        if [ "$url" == "${lasthysteriasplit[$[ count -1 ]]}" ]; then
+                echo "Hysteria config$count has not changed."
+        else
+                md5=`echo -n $server-hy-${count}$md5key$url|md5sum|cut -d ' ' -f1`
+                result=`curl -s --data-urlencode "ps=$url" --data-urlencode "keyword=$server-hy-$count" --data-urlencode "md5=$md5" $reqServer`
+        fi
+        count=$((${count} + 1))
+done
+
 if [ ! $result ]; then
         echo "No updates are required."
 elif [ "$result" == '{"result":0}' ]; then
 	echo "Submit success."
 	sed -i "/^lasturl=/clasturl=\"$newurl\"" $config
+	sed -i "/^lasthysteria=/clasthysteria=\"$newhyurl\"" $config
 else
 	echo "Submit failure."
 	exit 1
