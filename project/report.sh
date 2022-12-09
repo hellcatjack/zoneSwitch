@@ -80,9 +80,9 @@ do
         count=$((${count} + 1))
 done
 
-if [ ! $result ]; then
+if [ -z "$(echo "$result")" ]; then
         echo "No updates are required."
-elif [ "$result" == '{"result":0}' ]; then
+elif [ "$result" == '{"result": 0}' ]; then
 	echo "Submit success."
 	sed -i "/^lasturl=/clasturl=\"$newurl\"" $config
 	sed -i "/^lasthysteria=/clasthysteria=\"$newhyurl\"" $config
