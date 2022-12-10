@@ -10,6 +10,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     # 定义变量md5key
     md5key = 'yourmd5password'
     defpath = '/youruripath'
+    file = '/etc/reqserver/list'
 
     def send_response_json(self, error_code):
         # 构建json格式的响应内容
@@ -57,15 +58,13 @@ class RequestHandler(BaseHTTPRequestHandler):
             return
 
 
-        file = '/etc/reqserver/list'
-
         lock = threading.Lock()
 
         with lock:
             found_keyword = False
             lines = []
-            if os.path.exists(file):
-                with open(file, 'r') as f:
+            if os.path.exists(self.file):
+                with open(self.file, 'r') as f:
                     for line in f:
                         if keyword in line:
                             line = '{},{}\n'.format(keyword, ps)
@@ -76,7 +75,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 lines.append('{},{}\n'.format(keyword, ps))
 
                 
-            with open(file, 'w') as f:
+            with open(self.file, 'w') as f:
                 for line in lines:
                     f.write(line)
        
