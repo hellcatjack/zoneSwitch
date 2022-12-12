@@ -35,7 +35,7 @@ echo "Pass! [$ip]"
 count=1
 lasturlsplit=(${lasturl//\;/ })
 newurl=""
-for line in `find /etc/shadowsocks-libev -name *.json`
+for line in `find /etc/shadowsocks* -name *.json`
 do
         method=`cat $line|grep method|awk -F '"' '{print $4}'`
         pwd=`cat $line|grep password|awk -F '"' '{print $4}'`
